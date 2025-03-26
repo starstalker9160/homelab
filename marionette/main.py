@@ -11,10 +11,10 @@ from flask import (
 print("[  OK  ] Starting app...")
 
 
-k = "[" + foreplay(loadOptions()) + "]"
+k = foreplay(loadOptions())
 try:
     if "0" in k:
-        raise InitializationErr(f"App unable to initialize, failed with error code: {k}")
+        raise InitializationErr(f"App unable to initialize, failed with error code: [{k}]")
     else:
         print(f"[  OK  ] App initialized successfully; code: {k}")
 except InitializationErr as e:
