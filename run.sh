@@ -1,10 +1,12 @@
 #!/bin/bash
 
+# Variables
+CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CACHE_DIRS=$(find . -type d -name "__pycache__")
+
 
 # Delete cache from previous runs
-cache_dirs=$(find . -type d -name "__pycache__")
-
-if [ -n "$cache_dirs" ]; then
+if [ -n "$CACHE_DIRS" ]; then
     find . -type d -name "__pycache__" -exec rm -rf {} +
     echo "[  OK  ] Cache cleared"
 else
@@ -12,4 +14,4 @@ else
 fi
 
 # Run marionette
-python3 ~/Documents/homelab/marionette/main.py
+python "$CWD/marionette/main.py"
