@@ -22,7 +22,7 @@ def cpuLimiter(cores: int) -> str:
         totalCores = os.cpu_count()
         if totalCores is None:
             cores = 1
-            print("[ FAIL ] UNABLE TO DETERMINE TOTAL CORES, USING 1 CORE")
+            log("UNABLE TO DETERMINE TOTAL CORES, USING 1 CORE", 2)
         elif cores is None or cores > totalCores or cores < 1:
             raise LimitError("Invalid or missing 'cpu_cores' value.")
         else:
@@ -33,12 +33,12 @@ def cpuLimiter(cores: int) -> str:
         out += "1"
         return out
     except LimitError as e:
-        print(f"[ FAIL ] Error in setting max cpu cores: {e}")
+        log(f"Error in setting max cpu cores: {e}", 3)
         sys.exit(1)
 
 
 def memoryLimiter(allotedMemory: int):
-    """Monitors the memory usage and kills the process if it exceeds the limit"""
+    """Monitor memory usage and kill process as needed"""
     try:
         out = "ML-"
         if allotedMemory is None or allotedMemory < 1:
@@ -50,9 +50,9 @@ def memoryLimiter(allotedMemory: int):
 
         def memoryWatcher():
             while True:
-                usage = pid.memory_info().rss / (1048576)
+                usage = pid.memory_info().rss / 1048576
                 if usage > allotedMemory:
-                    print(f"[ INFO ] Memory limit exceeded! ({usage:.2f} MiB > {allotedMemory} MiB). Killing process.")
+                    log(f"Memory limit exceeded! ({usage:.2f} MiB > {allotedMemory} MiB). Killing process.", 1)
                     pid.terminate()
                     break
                 time.sleep(1)
@@ -61,7 +61,7 @@ def memoryLimiter(allotedMemory: int):
         thread.start()
         return out
     except LimitError as e:
-        print(f"[ FAIL ] Error in setting max memory limit: {e}")
+        log(f"Error in setting max memory limit: {e}", 3)
         sys.exit(1)
 
 
@@ -73,15 +73,15 @@ def foreplay(options: dict) -> str:
     out = "I-"
 
     if options is None:
-        print("[ FAIL ] Launch options do not exist")
+        log("Launch options do not exist", 3)
         out += "0"
         return
     else:
         k = cpuLimiter(options.get("cpu-cores"))
-        print(f"[  OK  ] Successfuly set max cores to {options.get('cpu-cores')}; code: [{k}]")
+        log(f"Successfully set max cores to {options.get('cpu-cores')}; code: [{k}]")
         out += "1"
         k = memoryLimiter(options.get("mem-alloc"))
-        print(f"[  OK  ] Successfuly allocated {options.get('mem-alloc')}MiB of memory; code: [{k}]")
+        log(f"Successfuly allocated {options.get('mem-alloc')}MiB of memory; code: [{k}]")
         out += "1"
 
     pycache_path = os.path.join(os.getcwd(), "backend/__pycache__")
@@ -89,3 +89,16 @@ def foreplay(options: dict) -> str:
         shutil.rmtree(pycache_path)
 
     return out
+
+
+
+def log(msg: str, code: int = 0) -> None:
+    """Print stuff with proper formatting
+       0 -> OK
+       1 -> INFO
+       2 -> WARN
+       3 -> FAIL    
+    """
+    labels = {0: (" OK ", 32), 1: ("INFO", 34), 2: ("WARN", 33), 3: ("FAIL", 31)}
+    tag, color = labels.get(code, ("???? ", 37))
+    print(f"\033[37m[\033[0m \033[{color}m{tag}\033[0m \033[37m] {msg}\033[0m")

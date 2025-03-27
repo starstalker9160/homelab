@@ -8,7 +8,7 @@ from flask import (
     render_template
 )
 
-print("[  OK  ] Starting app...")
+log("Starting app...")
 
 
 k = foreplay(loadOptions())
@@ -16,9 +16,9 @@ try:
     if "0" in k:
         raise InitializationErr(f"App unable to initialize, failed with error code: [{k}]")
     else:
-        print(f"[  OK  ] App initialized successfully; code: {k}")
+        log(f"App initialized successfully; code: {k}")
 except InitializationErr as e:
-    print(f"[ FAIL ] Initialization error: {e}")
+    log(f"Initialization error: {e}", 3)
     sys.exit(1)
 
 
@@ -43,5 +43,9 @@ if __name__ == "__main__":
     try:
         app.run(host="0.0.0.0", port=8080, debug=False)
         # Timer(1, lambda: webbrowser_open("http://0.0.0.0:8080")).start()
+    except KeyboardInterrupt:
+        log(r"^C pressed, shutting down marionette", 1)
     except Exception as e:
-        print(f"[ FAIL ] Error: {e}")
+        log(f"Error: {e}", 3)
+    finally:
+        log("marionette shutdown successful")
