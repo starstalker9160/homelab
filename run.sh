@@ -7,7 +7,7 @@ CACHE_DIRS=$(find . -type d -name "__pycache__")
 
 # Functions
 log() {
-    local c=(32 34 33 31) t=("OK  " "INFO" "WARN" "FAIL")
+    local c=(32 34 33 31) t=("  OK  " " INFO " " WARN " " FAIL ")
     local tag="\e[37m[\e[${c[$1]:-37}m${t[$1]:-????}\e[37m]\e[0m"
     echo -e "$tag $2\e[0m"
 }
@@ -19,6 +19,11 @@ catch() {
 
 
 # Delete cache from previous runs
+
+if [ "$(id -u)" -ne 0 ]; then
+    log 3 "Please run the script as sudo"
+fi
+
 if [ -n "$CACHE_DIRS" ]; then
     find . -type d -name "__pycache__" -exec rm -rf {} +
     log 0 "Cache cleared"
