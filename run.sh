@@ -1,30 +1,36 @@
 #!/bin/bash
 
+set -e
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+
+
 # Variables
-CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CACHE_DIRS=$(find . -type d -name "__pycache__")
+M_VER=$(jq -r '.marionetteVersion // empty' desc.json)
 
 
-# Functions
-log() {
-    local c=(32 34 33 31) t=("  OK  " " INFO " " WARN " " FAIL ")
-    local tag="\e[37m[\e[${c[$1]:-37}m${t[$1]:-????}\e[37m]\e[0m"
-    echo -e "$tag $2\e[0m"
-}
-
-catch() {
-    log 3 "An error occurred: $1"
-    exit 1
-}
-
-
-# Delete cache from previous runs
-
+# Actual stuff
 if [ "$(id -u)" -ne 0 ]; then
     log 3 "Please run the script as sudo"
+    exit 1
 fi
 
-if [ -n "$CACHE_DIRS" ]; then
+if ! command -v jq &>/dev/null; then
+    log 3 "Missing required libraries, run install.sh first"
+    exit 1
+fi
+
+if [ ! -f desc.json ]; then
+    log 3 "desc.json not found"
+    exit 1
+fi
+
+if [ -z "$M_VER" ]; then
+    log 3 "marionette version not found."
+    exit 1
+fi
+
+
+if find . -type d -name "__pycache__" | grep -q .; then
     find . -type d -name "__pycache__" -exec rm -rf {} +
     log 0 "Cache cleared"
 else
@@ -32,5 +38,7 @@ else
 fi
 
 
+echo "marionette version: $M_VER"
+
 # Run marionette
-python "$CWD/marionette/main.py" || catch "Failed to run marionette"
+sudo python "$CWD/marionette/main.py" || catch "Failed to run marionette (as sudo)"

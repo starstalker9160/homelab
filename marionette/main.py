@@ -45,7 +45,8 @@ if __name__ == "__main__":
         # Timer(1, lambda: webbrowser_open("http://0.0.0.0:8080")).start()
     except KeyboardInterrupt:
         log(r"^C pressed, shutting down marionette", 1)
+        log(r"Shutdown marionette successfully")
+        sys.exit(0)
     except Exception as e:
         log(f"Error: {e}", 3)
-    finally:
-        log("marionette shutdown successful")
+        raise
