@@ -30,10 +30,10 @@ else
 fi
 
 
-log 1 "Updating package lists..."
+log 0 "Updating package lists..."
 $UPDATE_CMD || catch "Failed to upgrade package lists"
 
-log 1 "Installing required packages..."
+log 0 "Installing required packages..."
 $INSTALL_CMD python3 jq || catch "Failed to install required packages"
 
 
