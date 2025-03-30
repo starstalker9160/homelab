@@ -13,6 +13,9 @@ MISSING_PACKAGES=()
 if ! is_installed python3; then
     MISSING_PACKAGES+=(python3)
 fi
+if ! is_installed python-psutil; then
+    MISSING_PACKAGES+=(jq)
+fi
 if ! is_installed jq; then
     MISSING_PACKAGES+=(jq)
 fi

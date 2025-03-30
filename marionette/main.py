@@ -1,11 +1,13 @@
 import sys
+import psutil
 from threading import Timer
 from backend.helper import *
 from backend.exceptions import *
 from webbrowser import open as webbrowser_open
 from flask import (
     Flask,
-    render_template
+    render_template,
+    jsonify
 )
 
 log("Starting app...")
@@ -24,6 +26,19 @@ except InitializationErr as e:
 
 app = Flask(__name__)
 
+
+@app.route("/metrics")
+def metrics():
+    cpu_usage = psutil.cpu_percent(interval=1)
+    ram_usage = psutil.virtual_memory().percent
+    net_io = psutil.net_io_counters()
+    network_usage = net_io.bytes_sent + net_io.bytes_recv  # Total bytes transferred
+
+    return jsonify({
+        "cpu": cpu_usage,
+        "ram": ram_usage,
+        "network": network_usage
+    })
 
 @app.route("/dashboard")
 def dashboard():
