@@ -1,5 +1,4 @@
-import sys
-import psutil
+import sys, psutil, logging
 from threading import Timer
 from backend.helper import *
 from backend.exceptions import *
@@ -26,6 +25,12 @@ except InitializationErr as e:
 
 app = Flask(__name__)
 
+class NoMetricsFilter(logging.Filter):
+    def filter(self, record):
+        return not ("GET /metrics" in record.getMessage())
+
+werkzeug_logger = logging.getLogger("werkzeug")
+werkzeug_logger.addFilter(NoMetricsFilter())
 
 @app.route("/metrics")
 def metrics():
