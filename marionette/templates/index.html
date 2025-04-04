@@ -17,7 +17,7 @@
 
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <script src="{{ url_for('static', filename='js/metrics.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/metrics.min.js') }}"></script>
     <title>marionette | Dashboard</title>
 </head>
 <body>
@@ -41,6 +41,23 @@
         </div>
         <div class="modules">
             <h2>Modules</h2>
+            <div class="track">
+                <div class="trackItem" data-itemName="grimoire">
+                    <h3>Grimoire</h3>
+                    <p>NAS (Network Attached Storage)</p>
+                    <div class="trackItemNav">
+                        <a href="/modules/grimoire/info">learn more</a>
+                        <a href="/modules/grimoire/config">config</a>
+                        <br>
+                        <div class="toggle-switch">
+                            <label class="slider">
+                                <input type="checkbox" class="checkbox">
+                                <span class="icon"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="errors">
             <h2>Error logs</h2>
