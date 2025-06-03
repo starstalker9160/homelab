@@ -75,7 +75,7 @@ def foreplay(options: dict) -> str:
     if options is None:
         log("Launch options do not exist", 3)
         out += "0"
-        return
+        return out
     else:
         k = cpuLimiter(options.get("cpu-cores"))
         log(f"Successfully set max cores to {options.get('cpu-cores')}; code: [{k}]")
