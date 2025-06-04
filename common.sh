@@ -1,5 +1,6 @@
 # Variables
 CWD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REQUIRED_PACKAGES=(python3 jq)
 
 
 # Functions
@@ -12,4 +13,8 @@ log() {
 catch() {
     log 3 "An error occurred: $1"
     exit 1
+}
+
+is_installed() {
+    command -v "$1" &>/dev/null
 }

@@ -14,10 +14,12 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-if ! command -v jq &>/dev/null; then
-    log 3 "Missing required libraries, run install.sh first"
-    exit 1
-fi
+for pkg in "${REQUIRED_PACKAGES[@]}"; do
+    if ! command -v "$pkg" &>/dev/null; then
+        log 3 "Missing required package: $pkg. Run install.sh first."
+        exit 1
+    fi
+done
 
 if [ ! -f desc.json ]; then
     log 3 "desc.json not found"
@@ -38,7 +40,7 @@ else
 fi
 
 
-echo "marionette version: $M_VER"
+log 1 "marionette version: $M_VER"
 
 # Run marionette
-sudo python "$CWD/marionette/main.py" || catch "Failed to run marionette (as sudo)"
+sudo python "$CWD/marionette/main.py" || { log 3 "Failed to run marionette (as sudo)"; exit 1; }
